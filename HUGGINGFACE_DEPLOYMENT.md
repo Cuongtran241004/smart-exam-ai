@@ -5,7 +5,7 @@
 ### ✅ Đã hoàn thành:
 
 - [x] Code đã được push lên GitHub
-- [x] GitHub Actions workflow đã được cấu hình và sửa lỗi
+- [x] GitHub Actions workflow đã được cấu hình và sửa lỗi (lần 3)
 - [x] Hugging Face config file đã được tạo
 
 ### 🔄 Cần thực hiện:
@@ -105,10 +105,26 @@
    **Giải pháp**: Đảm bảo các file model trong thư mục `Code/models/`
 
 5. **GitHub Actions workflow error**:
+
    ```
    Error: Can't find 'action.yml'
    ```
-   **Giải pháp**: ✅ Đã sửa - sử dụng huggingface-cli thay vì action
+
+   **Giải pháp**: ✅ Đã sửa - sử dụng git push thay vì action
+
+6. **huggingface-cli push error**:
+
+   ```
+   Error: unrecognized arguments: --space-sdk
+   ```
+
+   **Giải pháp**: ✅ Đã sửa - sử dụng git push thay vì huggingface-cli push
+
+7. **Git clone authentication error**:
+   ```
+   Error: could not read Username for 'https://huggingface.co'
+   ```
+   **Giải pháp**: ✅ Đã sửa - sử dụng token authentication trong URL
 
 ## 📊 Kiểm tra sau khi deploy
 
@@ -196,11 +212,27 @@ Sau khi deploy thành công, bạn sẽ có:
 - ✅ API docs: `https://your-username-proctoring-system.hf.space/docs`
 - ✅ Health check: `https://your-username-proctoring-system.hf.space/health`
 
-## 🔄 Workflow đã được sửa
+## 🔄 Workflow đã được sửa (lần 3)
 
-GitHub Actions workflow đã được cập nhật để sử dụng `huggingface-cli` thay vì action không tồn tại. Workflow mới sẽ:
+GitHub Actions workflow đã được cập nhật để sử dụng token authentication cho git operations. Workflow mới sẽ:
 
-1. Setup Python environment
-2. Install huggingface_hub
-3. Create space nếu chưa tồn tại
-4. Push code lên space
+1. Configure git
+2. Clone space repository với token authentication
+3. Copy files (excluding .git và space-repo)
+4. Initialize git và push với token authentication
+
+### Các bước trong workflow:
+
+```yaml
+- Configure git: git config user.email và user.name
+- Clone space: git clone https://TOKEN@huggingface.co/spaces/username/proctoring-system
+- Copy files: rsync -av --exclude='.git' --exclude='space-repo' . space-repo/
+- Push: git push -u origin main --force với token authentication
+```
+
+### Ưu điểm của workflow mới:
+
+- ✅ Không cần huggingface-cli
+- ✅ Sử dụng token authentication
+- ✅ Tự động tạo space nếu chưa tồn tại
+- ✅ Xử lý lỗi tốt hơn

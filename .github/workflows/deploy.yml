@@ -23,7 +23,7 @@ jobs:
           HUGGINGFACE_TOKEN: ${{ secrets.HUGGINGFACE_TOKEN }}
         run: |
           # Try to clone the space repository (it will be created automatically if it doesn't exist)
-          git clone https://${{ secrets.HUGGINGFACE_TOKEN }}@huggingface.co/spaces/${{ github.repository_owner }}/proctoring-system space-repo || git clone https://${{ secrets.HUGGINGFACE_TOKEN }}@huggingface.co/spaces/${{ github.actor }}/proctoring-system space-repo
+          git clone https://$HUGGINGFACE_TOKEN@huggingface.co/spaces/${{ github.repository_owner }}/proctoring-system space-repo || git clone https://$HUGGINGFACE_TOKEN@huggingface.co/spaces/${{ github.actor }}/proctoring-system space-repo
 
           # Copy files to space repository (excluding .git and space-repo)
           rsync -av --exclude='.git' --exclude='space-repo' . space-repo/
@@ -33,5 +33,5 @@ jobs:
           git init
           git add .
           git commit -m "Deploy from GitHub Actions - $(date)"
-          git remote add origin https://${{ secrets.HUGGINGFACE_TOKEN }}@huggingface.co/spaces/${{ github.repository_owner }}/proctoring-system || git remote add origin https://${{ secrets.HUGGINGFACE_TOKEN }}@huggingface.co/spaces/${{ github.actor }}/proctoring-system
+          git remote add origin https://$HUGGINGFACE_TOKEN@huggingface.co/spaces/${{ github.repository_owner }}/proctoring-system || git remote add origin https://$HUGGINGFACE_TOKEN@huggingface.co/spaces/${{ github.actor }}/proctoring-system
           git push -u origin main --force
