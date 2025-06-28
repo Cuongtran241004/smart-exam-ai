@@ -37,5 +37,6 @@ jobs:
           git init
           git add .
           git commit -m "Deploy from GitHub Actions - $(date)"
+          git remote remove origin || true
           git remote add origin https://huggingface.co/spaces/cuongse/proctoring-system 
           git push -u origin main --force
