@@ -5,7 +5,7 @@
 ### ✅ Đã hoàn thành:
 
 - [x] Code đã được push lên GitHub
-- [x] GitHub Actions workflow đã được cấu hình
+- [x] GitHub Actions workflow đã được cấu hình và sửa lỗi
 - [x] Hugging Face config file đã được tạo
 
 ### 🔄 Cần thực hiện:
@@ -97,10 +97,18 @@
    **Giải pháp**: Kiểm tra Dockerfile và requirements.txt
 
 4. **Model files missing**:
+
    ```
    Error: Model not found
    ```
+
    **Giải pháp**: Đảm bảo các file model trong thư mục `Code/models/`
+
+5. **GitHub Actions workflow error**:
+   ```
+   Error: Can't find 'action.yml'
+   ```
+   **Giải pháp**: ✅ Đã sửa - sử dụng huggingface-cli thay vì action
 
 ## 📊 Kiểm tra sau khi deploy
 
@@ -122,6 +130,12 @@ curl https://your-username-proctoring-system.hf.space/health
 
 # Get students
 curl https://your-username-proctoring-system.hf.space/students
+```
+
+### 4. Sử dụng script kiểm tra:
+
+```bash
+python check_deployment.py
 ```
 
 ## 🔄 Update và Redeploy
@@ -172,6 +186,7 @@ Nếu gặp vấn đề:
 2. Kiểm tra Hugging Face Space logs
 3. Đảm bảo token có quyền "Write"
 4. Kiểm tra tên Space đúng format
+5. Sử dụng script `check_deployment.py` để kiểm tra
 
 ## 🎉 Thành công!
 
@@ -180,3 +195,12 @@ Sau khi deploy thành công, bạn sẽ có:
 - ✅ API endpoint: `https://your-username-proctoring-system.hf.space`
 - ✅ API docs: `https://your-username-proctoring-system.hf.space/docs`
 - ✅ Health check: `https://your-username-proctoring-system.hf.space/health`
+
+## 🔄 Workflow đã được sửa
+
+GitHub Actions workflow đã được cập nhật để sử dụng `huggingface-cli` thay vì action không tồn tại. Workflow mới sẽ:
+
+1. Setup Python environment
+2. Install huggingface_hub
+3. Create space nếu chưa tồn tại
+4. Push code lên space
