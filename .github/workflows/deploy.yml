@@ -27,7 +27,7 @@ jobs:
           echo "https://oauth2:$HUGGINGFACE_TOKEN@huggingface.co" > ~/.git-credentials
 
           # Try to clone the space repository using HTTPS format
-          git clone https://huggingface.co/spaces/${{ github.repository_owner }}/proctoring-system space-repo || git clone https://huggingface.co/spaces/${{ github.actor }}/proctoring-system space-repo
+          git clone https://huggingface.co/spaces/cuongse/proctoring-system space-repo
 
           # Copy files to space repository (excluding .git and space-repo)
           rsync -av --exclude='.git' --exclude='space-repo' . space-repo/
@@ -37,5 +37,5 @@ jobs:
           git init
           git add .
           git commit -m "Deploy from GitHub Actions - $(date)"
-          git remote add origin https://huggingface.co/spaces/${{ github.repository_owner }}/proctoring-system || git remote add origin https://huggingface.co/spaces/${{ github.actor }}/proctoring-system
+          git remote add origin https://huggingface.co/spaces/cuongse/proctoring-system 
           git push -u origin main --force
