@@ -29,8 +29,8 @@ jobs:
           # Try to clone the space repository using HTTPS format
           git clone https://huggingface.co/spaces/cuongse/proctoring-system space-repo
 
-          # Copy files to space repository (excluding large files and directories)
-          rsync -av --exclude='.git' --exclude='space-repo' --exclude='Code/HeadposeTraining' --exclude='Code/models' --exclude='Miscellaneous' --exclude='New_Functionalities' --exclude='Video' . space-repo/
+          # Copy files to space repository (excluding large files, binary files and directories)
+          rsync -av --exclude='.git' --exclude='space-repo' --exclude='Code/HeadposeTraining' --exclude='Code/models' --exclude='Code/student_db' --exclude='Miscellaneous' --exclude='New_Functionalities' --exclude='Video' --exclude='Documentation' . space-repo/
           cd space-repo
 
           # Initialize git and push
