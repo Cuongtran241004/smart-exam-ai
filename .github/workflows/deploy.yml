@@ -13,11 +13,21 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Deploy to Spaces
-        uses: huggingface/huggingface_hub@main
+      - name: Set up Python
+        uses: actions/setup-python@v4
         with:
-          repo-type: space
-          space-sdk: docker
-          space-config-path: .huggingface/config.yaml
+          python-version: "3.9"
+
+      - name: Install Hugging Face Hub
+        run: |
+          pip install huggingface_hub
+
+      - name: Deploy to Spaces
         env:
           HUGGINGFACE_TOKEN: ${{ secrets.HUGGINGFACE_TOKEN }}
+        run: |
+          # Create space if it doesn't exist
+          huggingface-cli repo create --type space --space-sdk docker proctoring-system || true
+
+          # Push to space
+          huggingface-cli repo push --repo-type space proctoring-system .
