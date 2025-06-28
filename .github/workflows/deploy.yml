@@ -22,6 +22,11 @@ jobs:
         run: |
           pip install huggingface_hub
 
+      - name: Configure Git
+        run: |
+          git config --global user.email "action@github.com"
+          git config --global user.name "GitHub Action"
+
       - name: Deploy to Spaces
         env:
           HUGGINGFACE_TOKEN: ${{ secrets.HUGGINGFACE_TOKEN }}
@@ -29,5 +34,19 @@ jobs:
           # Create space if it doesn't exist
           huggingface-cli repo create --type space --space-sdk docker proctoring-system || true
 
-          # Push to space
-          huggingface-cli repo push --repo-type space proctoring-system .
+          # Clone the space repository
+          git clone https://huggingface.co/spaces/${{ github.repository_owner }}/proctoring-system space-repo || git clone https://huggingface.co/spaces/${{ github.actor }}/proctoring-system space-repo
+
+          # Copy files to space repository
+          cp -r . space-repo/
+          cd space-repo
+
+          # Remove .git directory to avoid conflicts
+          rm -rf .git
+
+          # Initialize git and push
+          git init
+          git add .
+          git commit -m "Deploy from GitHub Actions"
+          git remote add origin https://huggingface.co/spaces/${{ github.repository_owner }}/proctoring-system || git remote add origin https://huggingface.co/spaces/${{ github.actor }}/proctoring-system
+          git push -u origin main --force
