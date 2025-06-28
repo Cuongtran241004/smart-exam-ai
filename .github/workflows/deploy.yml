@@ -26,7 +26,7 @@ jobs:
           git config --global credential.helper store
           echo "https://oauth2:$HUGGINGFACE_TOKEN@huggingface.co" > ~/.git-credentials
 
-          # Try to clone the space repository
+          # Try to clone the space repository using HTTPS format
           git clone https://huggingface.co/spaces/${{ github.repository_owner }}/proctoring-system space-repo || git clone https://huggingface.co/spaces/${{ github.actor }}/proctoring-system space-repo
 
           # Copy files to space repository (excluding .git and space-repo)
