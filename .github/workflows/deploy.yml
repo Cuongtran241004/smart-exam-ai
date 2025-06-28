@@ -13,15 +13,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.9"
-
-      - name: Install Hugging Face Hub
-        run: |
-          pip install huggingface_hub
-
       - name: Configure Git
         run: |
           git config --global user.email "action@github.com"
@@ -31,13 +22,10 @@ jobs:
         env:
           HUGGINGFACE_TOKEN: ${{ secrets.HUGGINGFACE_TOKEN }}
         run: |
-          # Create space if it doesn't exist (using correct syntax)
-          huggingface-cli repo create --type space --space-sdk docker proctoring-system || echo "Space might already exist"
+          # Try to clone the space repository (it will be created automatically if it doesn't exist)
+          git clone https://${{ secrets.HUGGINGFACE_TOKEN }}@huggingface.co/spaces/${{ github.repository_owner }}/proctoring-system space-repo || git clone https://${{ secrets.HUGGINGFACE_TOKEN }}@huggingface.co/spaces/${{ github.actor }}/proctoring-system space-repo
 
-          # Clone the space repository
-          git clone https://huggingface.co/spaces/${{ github.repository_owner }}/proctoring-system space-repo || git clone https://huggingface.co/spaces/${{ github.actor }}/proctoring-system space-repo
-
-          # Copy files to space repository (excluding .git)
+          # Copy files to space repository (excluding .git and space-repo)
           rsync -av --exclude='.git' --exclude='space-repo' . space-repo/
           cd space-repo
 
@@ -45,5 +33,5 @@ jobs:
           git init
           git add .
           git commit -m "Deploy from GitHub Actions - $(date)"
-          git remote add origin https://huggingface.co/spaces/${{ github.repository_owner }}/proctoring-system || git remote add origin https://huggingface.co/spaces/${{ github.actor }}/proctoring-system
+          git remote add origin https://${{ secrets.HUGGINGFACE_TOKEN }}@huggingface.co/spaces/${{ github.repository_owner }}/proctoring-system || git remote add origin https://${{ secrets.HUGGINGFACE_TOKEN }}@huggingface.co/spaces/${{ github.actor }}/proctoring-system
           git push -u origin main --force
