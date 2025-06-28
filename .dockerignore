@@ -1,22 +1,76 @@
+# Git
 .git
 .gitignore
+
+# Python
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+env
+pip-log.txt
+pip-delete-this-directory.txt
+.tox
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.log
+.git
+.mypy_cache
+.pytest_cache
+.hypothesis
+
+# Virtual environments
+venv/
+env/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Large model files that are not needed for basic functionality
+Code/models/yolov3.weights
+Code/models/shape_predictor_68_face_landmarks.dat
+Code/models/Headpose_customARC_ZoomShiftNoise.hdf5
+Code/models/face_spoofing.pkl
+
+# Documentation
+README.md
+*.md
+
+# Test files
+tests/
+test_*
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+*.tmp
+*.temp
+
+# Additional files
 README.md
 Documentation/
 Video/
 New_Functionalities/
 Miscellaneous/
-*.pyc
-__pycache__/
-.pytest_cache/
-.coverage
-htmlcov/
 .env
 .venv
-venv/
-ENV/
-env/
+.env
 .idea/
 .vscode/
-*.log
 .DS_Store
 Thumbs.db 

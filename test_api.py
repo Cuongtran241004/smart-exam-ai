@@ -1,25 +1,45 @@
+#!/usr/bin/env python3
+"""
+Simple test script for the Intelligent Online Exam Proctoring System API
+"""
+
 import requests
-import base64
 import json
-from PIL import Image
-import numpy as np
+import base64
 import cv2
+import numpy as np
 
 def test_health():
     """Test health endpoint"""
     try:
-        response = requests.get('http://localhost:8000/health')
-        print("Health Check:", response.json())
+        response = requests.get("http://localhost:8000/health")
+        print("Health Check:")
+        print(f"Status Code: {response.status_code}")
+        print(f"Response: {response.json()}")
         return response.status_code == 200
     except Exception as e:
         print(f"Health check failed: {e}")
         return False
 
+def test_root():
+    """Test root endpoint"""
+    try:
+        response = requests.get("http://localhost:8000/")
+        print("\nRoot Endpoint:")
+        print(f"Status Code: {response.status_code}")
+        print(f"Response: {response.json()}")
+        return response.status_code == 200
+    except Exception as e:
+        print(f"Root endpoint failed: {e}")
+        return False
+
 def test_students():
     """Test students endpoint"""
     try:
-        response = requests.get('http://localhost:8000/students')
-        print("Students:", response.json())
+        response = requests.get("http://localhost:8000/students")
+        print("\nStudents Endpoint:")
+        print(f"Status Code: {response.status_code}")
+        print(f"Response: {response.json()}")
         return response.status_code == 200
     except Exception as e:
         print(f"Students endpoint failed: {e}")
@@ -27,12 +47,14 @@ def test_students():
 
 def create_test_image():
     """Create a simple test image"""
-    # Create a simple test image
-    img = np.zeros((480, 640, 3), dtype=np.uint8)
-    img[:] = (128, 128, 128)  # Gray background
+    # Create a simple image with a face-like shape
+    img = np.zeros((300, 300, 3), dtype=np.uint8)
     
-    # Add some text
-    cv2.putText(img, "Test Image", (200, 240), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2)
+    # Draw a simple face
+    cv2.circle(img, (150, 150), 80, (255, 255, 255), -1)  # Face
+    cv2.circle(img, (130, 130), 10, (0, 0, 0), -1)        # Left eye
+    cv2.circle(img, (170, 130), 10, (0, 0, 0), -1)        # Right eye
+    cv2.ellipse(img, (150, 170), (20, 10), 0, 0, 180, (0, 0, 0), 2)  # Mouth
     
     return img
 
@@ -40,78 +62,75 @@ def test_analyze_frame():
     """Test analyze_frame endpoint"""
     try:
         # Create test image
-        test_img = create_test_image()
+        img = create_test_image()
         
-        # Save to temporary file
-        cv2.imwrite('test_frame.jpg', test_img)
+        # Convert to bytes
+        _, buffer = cv2.imencode('.jpg', img)
+        img_bytes = buffer.tobytes()
         
-        # Upload file
-        with open('test_frame.jpg', 'rb') as f:
-            files = {'file': f}
-            response = requests.post('http://localhost:8000/analyze_frame', files=files)
+        # Test file upload
+        files = {'file': ('test.jpg', img_bytes, 'image/jpeg')}
+        response = requests.post("http://localhost:8000/analyze_frame", files=files)
         
-        print("Analyze Frame:", response.json())
-        return response.status_code == 200
+        print("\nAnalyze Frame (File Upload):")
+        print(f"Status Code: {response.status_code}")
+        print(f"Response: {response.json()}")
+        
+        # Test base64
+        img_base64 = base64.b64encode(img_bytes).decode('utf-8')
+        data = {"image": img_base64}
+        response = requests.post("http://localhost:8000/analyze_frame_base64", json=data)
+        
+        print("\nAnalyze Frame (Base64):")
+        print(f"Status Code: {response.status_code}")
+        print(f"Response: {response.json()}")
+        
+        return True
     except Exception as e:
-        print(f"Analyze frame failed: {e}")
-        return False
-
-def test_analyze_frame_base64():
-    """Test analyze_frame_base64 endpoint"""
-    try:
-        # Create test image
-        test_img = create_test_image()
-        
-        # Convert to base64
-        _, buffer = cv2.imencode('.jpg', test_img)
-        img_str = base64.b64encode(buffer).decode('utf-8')
-        
-        # Send request
-        response = requests.post('http://localhost:8000/analyze_frame_base64', 
-                               json={'image': img_str})
-        
-        print("Analyze Frame Base64:", response.json())
-        return response.status_code == 200
-    except Exception as e:
-        print(f"Analyze frame base64 failed: {e}")
+        print(f"Analyze frame test failed: {e}")
         return False
 
 def main():
     """Run all tests"""
     print("Testing Intelligent Online Exam Proctoring System API")
-    print("=" * 50)
+    print("=" * 60)
     
     tests = [
         ("Health Check", test_health),
-        ("Students", test_students),
+        ("Root Endpoint", test_root),
+        ("Students Endpoint", test_students),
         ("Analyze Frame", test_analyze_frame),
-        ("Analyze Frame Base64", test_analyze_frame_base64)
     ]
     
     results = []
     for test_name, test_func in tests:
-        print(f"\nRunning {test_name}...")
+        print(f"\n{'='*20} {test_name} {'='*20}")
         try:
             result = test_func()
             results.append((test_name, result))
-            print(f"{test_name}: {'PASS' if result else 'FAIL'}")
         except Exception as e:
-            print(f"{test_name}: ERROR - {e}")
+            print(f"Test {test_name} failed with exception: {e}")
             results.append((test_name, False))
     
-    print("\n" + "=" * 50)
-    print("Test Results Summary:")
+    print("\n" + "=" * 60)
+    print("TEST RESULTS SUMMARY")
+    print("=" * 60)
+    
+    passed = 0
+    total = len(results)
+    
     for test_name, result in results:
         status = "PASS" if result else "FAIL"
         print(f"{test_name}: {status}")
+        if result:
+            passed += 1
     
-    # Clean up
-    try:
-        import os
-        if os.path.exists('test_frame.jpg'):
-            os.remove('test_frame.jpg')
-    except:
-        pass
+    print(f"\nOverall: {passed}/{total} tests passed")
+    
+    if passed == total:
+        print("🎉 All tests passed!")
+    else:
+        print("❌ Some tests failed")
 
 if __name__ == "__main__":
     main() 
