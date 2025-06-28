@@ -13,7 +13,15 @@ RUN apt-get update && apt-get install -y \
     libgtk-3-dev \
     libboost-python-dev \
     libopencv-dev \
+    wget \
     && rm -rf /var/lib/apt/lists/*
+
+# Install specific CMake version for dlib compatibility
+RUN wget https://github.com/Kitware/CMake/releases/download/v3.16.3/cmake-3.16.3-Linux-x86_64.tar.gz \
+    && tar -xzf cmake-3.16.3-Linux-x86_64.tar.gz \
+    && mv cmake-3.16.3-Linux-x86_64 /opt/cmake \
+    && ln -s /opt/cmake/bin/cmake /usr/local/bin/cmake \
+    && rm cmake-3.16.3-Linux-x86_64.tar.gz
 
 # Copy requirements first for better caching
 COPY requirements.txt .
