@@ -39,7 +39,7 @@ sleep 10
 # Check if the application is running
 echo "🔍 Checking application health..."
 for i in {1..30}; do
-    if curl -f http://localhost:8000/health &> /dev/null; then
+    if curl -f http://localhost:7860/health &> /dev/null; then
         echo "✅ Application is running and healthy"
         break
     fi
@@ -70,8 +70,8 @@ echo "✅ All tests passed!"
 # Show application info
 echo ""
 echo "🎉 Application is ready!"
-echo "📱 API Documentation: http://localhost:8000/docs"
-echo "🔧 Health Check: http://localhost:8000/health"
+echo "📱 API Documentation: http://localhost:7860/docs"
+echo "🔧 Health Check: http://localhost:7860/health"
 echo "🧪 Test UI: Open test_ui.html in your browser"
 echo ""
 echo "To stop the application, run: docker-compose down"

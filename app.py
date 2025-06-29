@@ -1,6 +1,7 @@
 from fastapi import FastAPI, File, UploadFile, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from contextlib import asynccontextmanager
 import cv2
 import numpy as np
 from collections import Counter
@@ -14,22 +15,7 @@ import json
 
 # Import các module từ Code directory
 sys.path.append('Code')
-from face_detection import get_face_detector, find_faces
-
-app = FastAPI(
-    title="Intelligent Online Exam Proctoring System API",
-    description="API for automatic online exam proctoring with face recognition and behavior monitoring",
-    version="1.0.0"
-)
-
-# CORS middleware
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+# from face_detection import get_face_detector, find_faces  # Removed - not needed
 
 # Global variables for models
 known_face_names = []
@@ -133,10 +119,28 @@ def process_frame(frame):
     
     return results
 
-@app.on_event("startup")
-async def startup_event():
-    """Initialize models on startup"""
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup
     initialize_models()
+    yield
+    # Shutdown (if needed)
+
+app = FastAPI(
+    title="Intelligent Online Exam Proctoring System API",
+    description="API for automatic online exam proctoring with face recognition and behavior monitoring",
+    version="1.0.0",
+    lifespan=lifespan
+)
+
+# CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.get("/")
 async def root():
@@ -209,4 +213,4 @@ async def get_students():
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000) 
+    uvicorn.run(app, host="0.0.0.0", port=7860) 

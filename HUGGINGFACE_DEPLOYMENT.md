@@ -7,6 +7,8 @@
 - [x] Code đã được push lên GitHub
 - [x] GitHub Actions workflow đã được cấu hình và sửa lỗi (lần 3)
 - [x] Hugging Face config file đã được tạo
+- [x] **Port 7860 đã được cấu hình cho Hugging Face deployment**
+- [x] Tất cả file cấu hình đã được cập nhật (Dockerfile, docker-compose.yml, test files)
 
 ### 🔄 Cần thực hiện:
 
@@ -22,6 +24,7 @@
    - Chọn **"Docker"** làm SDK
    - Đặt tên: `your-username/proctoring-system` (thay `your-username` bằng username của bạn)
    - Chọn "Public" hoặc "Private"
+   - **Quan trọng**: Đảm bảo port được set là **7860**
    - Click "Create Space"
 
 ## Bước 2: Lấy Hugging Face Token
@@ -68,6 +71,23 @@
 - Kiểm tra trạng thái build
 - Xem logs nếu có lỗi
 
+## 🔧 Cấu hình Port 7860
+
+### ✅ Đã cập nhật:
+
+- **Dockerfile**: EXPOSE 7860, CMD uvicorn --port 7860
+- **docker-compose.yml**: ports: "7860:7860"
+- **build_and_test.sh**: Health check trên port 7860
+- **test_api.py**: Tất cả API calls sử dụng port 7860
+- **test_ui.html**: API_BASE = 'http://localhost:7860'
+- **README.md**: Cập nhật documentation cho port 7860
+
+### 🎯 Lợi ích của port 7860:
+
+- ✅ Tối ưu cho Hugging Face Spaces
+- ✅ Tránh conflict với các port khác
+- ✅ Phù hợp với cấu hình mặc định của HF Spaces
+
 ## 🔧 Troubleshooting
 
 ### Lỗi thường gặp:
@@ -104,7 +124,15 @@
 
    **Giải pháp**: Đảm bảo các file model trong thư mục `Code/models/`
 
-5. **GitHub Actions workflow error**:
+5. **Port conflict**:
+
+   ```
+   Error: Port already in use
+   ```
+
+   **Giải pháp**: ✅ Đã sửa - sử dụng port 7860
+
+6. **GitHub Actions workflow error**:
 
    ```
    Error: Can't find 'action.yml'
@@ -112,7 +140,7 @@
 
    **Giải pháp**: ✅ Đã sửa - sử dụng git push thay vì action
 
-6. **huggingface-cli push error**:
+7. **huggingface-cli push error**:
 
    ```
    Error: unrecognized arguments: --space-sdk
@@ -120,7 +148,7 @@
 
    **Giải pháp**: ✅ Đã sửa - sử dụng git push thay vì huggingface-cli push
 
-7. **Git clone authentication error**:
+8. **Git clone authentication error**:
    ```
    Error: could not read Username for 'https://huggingface.co'
    ```
@@ -161,7 +189,7 @@ python check_deployment.py
 ```bash
 # Thay đổi code
 git add .
-git commit -m "Update code"
+git commit -m "Update code for port 7860"
 git push origin main
 ```
 
@@ -203,6 +231,7 @@ Nếu gặp vấn đề:
 3. Đảm bảo token có quyền "Write"
 4. Kiểm tra tên Space đúng format
 5. Sử dụng script `check_deployment.py` để kiểm tra
+6. **Đảm bảo port 7860 được cấu hình đúng**
 
 ## 🎉 Thành công!
 
@@ -211,6 +240,7 @@ Sau khi deploy thành công, bạn sẽ có:
 - ✅ API endpoint: `https://your-username-proctoring-system.hf.space`
 - ✅ API docs: `https://your-username-proctoring-system.hf.space/docs`
 - ✅ Health check: `https://your-username-proctoring-system.hf.space/health`
+- ✅ **Port 7860**: Tối ưu cho Hugging Face Spaces
 
 ## 🔄 Workflow đã được sửa (lần 3)
 
@@ -236,3 +266,4 @@ GitHub Actions workflow đã được cập nhật để sử dụng token authe
 - ✅ Sử dụng token authentication
 - ✅ Tự động tạo space nếu chưa tồn tại
 - ✅ Xử lý lỗi tốt hơn
+- ✅ **Port 7860 được cấu hình đúng**

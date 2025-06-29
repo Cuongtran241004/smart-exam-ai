@@ -21,84 +21,201 @@ Hệ thống giám sát thi trực tuyến thông minh với nhận diện khuô
 - **Phát hiện gian lận**: Giám sát hành vi bất thường
 - **API RESTful**: Dễ dàng tích hợp với các ứng dụng khác
 
-## 📚 API Endpoints
+## 🚀 Live Demo
+
+**Hugging Face Space**: [https://huggingface.co/spaces/your-username/proctoring-system](https://huggingface.co/spaces/your-username/proctoring-system)
+
+**API Endpoints**:
+
+- Health Check: `https://your-username-proctoring-system.hf.space/health`
+- API Documentation: `https://your-username-proctoring-system.hf.space/docs`
+- Analyze Frame: `https://your-username-proctoring-system.hf.space/analyze_frame`
+
+## 📋 Features
+
+- **Face Detection & Recognition**: Automatic detection and verification of student faces
+- **Behavior Monitoring**: Real-time monitoring of exam behavior
+- **Object Detection**: Detection of banned objects and multiple people
+- **Head Pose Analysis**: Monitoring head position and movement
+- **Spoofing Detection**: Prevention of face spoofing attacks
+- **RESTful API**: Easy integration with existing systems
+
+## 🛠️ Technology Stack
+
+- **Backend**: FastAPI (Python)
+- **Computer Vision**: OpenCV, NumPy
+- **Face Recognition**: Custom face detection models
+- **Deployment**: Docker, Hugging Face Spaces
+- **Port**: 7860 (optimized for Hugging Face deployment)
+
+## 🚀 Quick Start
+
+### Local Development
+
+1. **Clone the repository**:
+
+   ```bash
+   git clone https://github.com/Cuongtran241004/smart-exam-ai.git
+   cd smart-exam-ai
+   ```
+
+2. **Install dependencies**:
+
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+3. **Run the application**:
+   ```bash
+   uvicorn app:app --host 0.0.0.0 --port 7860 --reload
+   ```
+
+### Docker Deployment
+
+1. **Build the Docker image**:
+
+   ```bash
+   docker build -t proctoring-system .
+   ```
+
+2. **Run the container**:
+   ```bash
+   docker run -p 7860:7860 proctoring-system
+   ```
+
+### Hugging Face Deployment
+
+The application is configured to run on **port 7860** for optimal Hugging Face Spaces deployment.
+
+1. **Create a Hugging Face Space**:
+
+   - Go to https://huggingface.co/spaces
+   - Choose "Docker" as SDK
+   - Set port to 7860
+
+2. **Deploy using GitHub Actions**:
+   - Push code to GitHub
+   - GitHub Actions will automatically deploy to Hugging Face
+
+## 📡 API Endpoints
 
 ### Health Check
 
-```
+```bash
 GET /health
 ```
 
-### Phân tích frame
+### Analyze Frame
 
-```
+```bash
 POST /analyze_frame
+Content-Type: multipart/form-data
 ```
 
-### Phân tích frame từ base64
+**Request**: Upload image file
+**Response**: JSON with analysis results
 
-```
+### Analyze Frame (Base64)
+
+```bash
 POST /analyze_frame_base64
+Content-Type: application/json
 ```
 
-### Danh sách sinh viên
+**Request**:
 
-```
-GET /students
-```
-
-## 🧪 Sử dụng API
-
-### Python Example:
-
-```python
-import requests
-
-# Health check
-response = requests.get('https://cuongse-proctoring-system.hf.space/health')
-print(response.json())
-
-# Analyze image
-with open('test_image.jpg', 'rb') as f:
-    files = {'file': f}
-    response = requests.post('https://cuongse-proctoring-system.hf.space/analyze_frame', files=files)
-    print(response.json())
+```json
+{
+  "image": "base64_encoded_image_string"
+}
 ```
 
-### JavaScript Example:
+## 🔧 Configuration
 
-```javascript
-// Health check
-fetch("https://cuongse-proctoring-system.hf.space/health")
-  .then((response) => response.json())
-  .then((data) => console.log(data));
+### Environment Variables
+
+- `PORT`: Application port (default: 7860)
+- `HOST`: Application host (default: 0.0.0.0)
+
+### Model Configuration
+
+- Face detection models: `Code/models/`
+- Student database: `Code/student_db/`
+
+## 📊 API Response Format
+
+```json
+{
+  "people_count": 1,
+  "banned_objects": [],
+  "face_detected": true,
+  "face_verified": true,
+  "person_name": "Student Name",
+  "headpose_alert": false,
+  "spoofing_alert": false,
+  "alerts": []
+}
 ```
 
-## 📖 API Documentation
+## 🧪 Testing
 
-Truy cập: https://cuongse-proctoring-system.hf.space/docs
+### Test API Endpoints
 
-## 🔧 Cấu hình
+```bash
+python test_api.py
+```
 
-Để sử dụng đầy đủ tính năng, bạn cần:
+### Test UI
 
-1. **Models**: Upload các file model vào thư mục `Code/models/`
-2. **Student Database**: Upload ảnh sinh viên vào thư mục `Code/student_db/`
+Open `test_ui.html` in your browser to test the API interactively.
 
-## 📞 Hỗ trợ
+### Check Deployment
 
-Nếu gặp vấn đề, vui lòng kiểm tra:
+```bash
+python check_deployment.py
+```
 
-- API Documentation: `/docs`
-- Health Check: `/health`
-- GitHub Repository: https://github.com/Cuongtran241004/smart-exam-ai
+## 📁 Project Structure
 
-## 🙏 Acknowledgments
+```
+├── app.py                 # Main FastAPI application
+├── Dockerfile            # Docker configuration
+├── requirements.txt      # Python dependencies
+├── Code/                 # Core modules
+│   ├── models/          # AI models
+│   ├── student_db/      # Student database
+│   └── face_detection.py
+├── .huggingface/        # Hugging Face configuration
+│   └── config.yaml
+├── test_api.py          # API testing script
+├── test_ui.html         # Web UI for testing
+└── README.md            # This file
+```
 
-- Original project by Apar Garg and Gopan Ravikumar Girija
-- FastAPI framework
-- Hugging Face Spaces for deployment
-- OpenCV and TensorFlow for computer vision
+## 🔄 Deployment Status
+
+- ✅ Docker configuration optimized for port 7860
+- ✅ Hugging Face Space configuration ready
+- ✅ GitHub Actions workflow configured
+- ✅ Health check endpoint available
+- ✅ API documentation accessible
+
+## 📞 Support
+
+For issues and questions:
+
+1. Check GitHub Actions logs
+2. Review Hugging Face Space logs
+3. Test with `check_deployment.py`
+4. Open an issue on GitHub
+
+## 📄 License
+
+MIT License - see LICENSE file for details.
+
+---
+
+**Note**: This application is configured to run on port 7860 for optimal deployment on Hugging Face Spaces. The port configuration is set in both the Dockerfile and the application startup command.
 
 # OVERVIEW 📚
 
